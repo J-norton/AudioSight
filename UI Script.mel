@@ -1,0 +1,40 @@
+float $low_mid_cutoff = 0;
+
+//Creates an audioNode associated with a sound file
+proc execute()
+{
+    //We should come up with a protocol for where to store .wav or .aiff files as this won't work 
+    string $audioFile = `sound -file "C:/Users/jamesn/Desktop/Ableton Songs/3_8_14 Newest Song Admiral Ellie.wav" -offset 0`;
+	
+	string $audioNodeName = `createNode audioNode`;
+	connectAttr time1.outTime ($audioNodeName+".inTime");
+}
+
+global proc sliderReleased(string $dragControl, string $dropControl, string $msgs[], int $x, int $y, int $type)
+{
+    print ("Called");
+}
+
+//Wrap creation of window so we don't leave a global lying around
+{
+    
+    $win = `window`;
+    
+    columnLayout;
+// create frame layout
+				frameLayout -collapsable true -collapse true -label "AudioSight";
+	
+					columnLayout;
+	                    
+						// This creates a button and will call our procedure when pressed
+						button -label "Create Audio Node" -command "execute";
+	                     floatSliderGrp -label "Low/Mid Frequency Cutoff" -field true	-fieldMinValue 100 -fieldMaxValue 1000 -minValue 100 -maxValue 1000 -value 200
+	                     -dropCallback sliderReleased;
+					setParent ..;
+				setParent ..;
+	
+
+    // show the window 
+    showWindow;
+}
+
