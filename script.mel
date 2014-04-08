@@ -1,3 +1,67 @@
+global proc float rmsBand(string $audioNodeName, int $start, int $end){
+    int $i=0;
+    string $band;
+    float $rms=0;
+    float $temp;
+    for($i=$start; $i<$end; $i++){
+        $band = $audioNodeName+".fftOut["+$i+"]";
+        $temp = `getAttr $band`;
+        $temp = $temp*$temp;
+        $rms=$rms+$temp;
+    }
+    $rms=sqrt($rms);
+    return $rms;
+}
+global proc grapesScene(string $path, int $bass, int $mid, int $treble, int $color, int $size) {
+    int $lowest = 0;
+    $mid = $mid + $bass;
+	$treble = $treble + $mid;
+	
+	if($treble != 32){
+	    print "The bass, mid, and treble bands must add up to 32";
+	    return;
+	}
+    
+	string $audioFile = `sound -file $path -offset 0`;
+    
+    string $audioNodeName = `createNode audioNode`;
+    connectAttr time1.outTime ($audioNodeName+".inTime");
+	connectAttr ($audioFile+".filename") ($audioNodeName+".filePath");
+	connectAttr ($audioFile+".offset") ($audioNodeName+".offset"); 
+	
+	string $cmd;
 
-CreatePolygonTorus;
+    if($color==1){
+        
+    }
+    else if($color==2){
+        
+    }
+    else if($color==3){
+        
+    }
+    else{
+        print "The color is not affected by any attributes.  Valid inputs are 1,2,3 which represent bass, midrange, and treble respectively.";
+    }
+    if($size==1){
+        $cmd = "polySphere1.radius = rmsBand(\""+$audioNodeName+"\","+$lowest+","+$bass+")";
+    }
+    else if($size==2){
+        $cmd = "polySphere1.radius = rmsBand(\""+$audioNodeName+"\","+$bass+","+$mid+")";
+    }
+    else if($size==3){
+        $cmd = "polySphere1.radius = rmsBand(\""+$audioNodeName+"\","+$mid+","+$treble+")";
+    }
+    else{
+       print "The size is not affected by any attributes.  Valid inputs are 1,2,3 which represent bass, midrange, and treble respectively.";
+    }
+    string $cmd2 = "lambert1.colorR = rmsBand(\""+$audioNodeName+"\","+$lowest+","+$bass+")";
+    string $cmd3 = "lambert1.colorG = rmsBand(\""+$audioNodeName+"\","+$bass+","+$mid+")";
+    string $cmd4 = "lambert1.colorB = rmsBand(\""+$audioNodeName+"\","+$mid+","+$treble+")";
 
+    polySphere -n "mySphere";
+    expression -s $cmd;
+    expression -s $cmd2;
+    expression -s $cmd3;
+    expression -s $cmd4;
+};
