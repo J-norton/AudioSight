@@ -9,13 +9,11 @@ columnLayout;
     floatSliderGrp -label "Bass" -field true -minValue 0 -maxValue 100 -value 100 "bass_slider";
     floatSliderGrp -label "Mid-Range" -field true -minValue 0 -maxValue 100 -value 100 "midrange_slider";
     floatSliderGrp -label "Treble" -field true -minValue 0 -maxValue 100 -value 100 "treble_slider";
-    text -label "Which frequency band should control the color of the visualization?";
-    radioButtonGrp -numberOfRadioButtons 3 -labelArray3 "Bass" "Mid-Range" "Treble" "band_radio";
-    intSliderGrp -label "Size" -field true -minValue 1 -maxValue 3 "size_slider";
-    intSliderGrp -label "X-Y Distortion" -field true -minValue 1 -maxValue 3 "ratio_slider";
+    radioButtonGrp -label "Which band controls color?" -numberOfRadioButtons 3 -labelArray3 "Bass" "Mid-Range" "Treble" "band_radio";
+    radioButtonGrp -label "Which band controls size?" -numberOfRadioButtons 3 -labelArray3 "Bass" "Mid-Range" "Treble" "size_radio";
     
     button -label "Create Audio Node" -command "gatherer()";
-	setParent ..;
+    setParent ..;
 showWindow;
 
 proc browser() {
@@ -40,12 +38,5 @@ proc gatherer() {
     int $size = `intSliderGrp -query -value "size_slider"`;
     int $ratio = `intSliderGrp -query -value "ratio_slider"`;
     
-    creator($filename, $bass, $mid, $treble, $color, $size, $ratio);
-}
-proc creator(string $filename, int $bass, int $mid, int $treble, int $color, int $size, int $ratio) {    
-	string $audiofile = `sound -file $filename -offset 0`;
-	string $audionodename = `createNode audioNode`;
-	connectAttr time1.outTime ($audionodename+".inTime");
-	connectAttr ($audiofile+".filename") ($audionodename+".filePath");
-	connectAttr ($audiofile+".offset") ($audionodename+".offset");
+    grapesScene($filename, $bass, $mid, $treble, $color, $size);
 }
